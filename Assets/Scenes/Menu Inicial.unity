@@ -2401,8 +2401,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 215b7f2408004944aaa889d41e6c049e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenu
+<<<<<<< HEAD
   panelInstrucciones: {fileID: 1891786555}
 --- !u!1 &1891786555
+=======
+  panelInstrucciones: {fileID: 0}
+--- !u!1 &1979304882
+>>>>>>> origin/MS1_2
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
