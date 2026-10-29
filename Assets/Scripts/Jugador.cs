@@ -4,24 +4,34 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class Jugador : MonoBehaviour
 {
-    [Header("Movimiento")]
+    [Header("Camara")]
     public Transform camara;
+    public float sensibilidadRaton = 2f;
+
+    [Header("Movimiento")]
     public float velocidad = 5f;
     public float velocidadCorrer = 8f;
-    public float saltar = 2f;
-    public float sensibilidadRaton = 2f;
+    public float fuerzaSalto = 7f;
     public float gravedad = -20f;
+
+    [Header("Agacharse")]
+    public Transform cuerpoVisual;
     public float alturaNormal = 2f;
     public float alturaAgachado = 1.2f;
+    public float alturaCamaraNormal = 1.6f;
+    public float alturaCamaraAgachado = 1f;
 
-    [Header("Menu de pausa")]
+    [Header("Pausa")]
     public GameObject menuPausa;
 
     private CharacterController controlador;
-    private float rotacionVertical;
     private float velocidadVertical;
+    private float rotacionVertical;
     private bool agachado;
     private bool pausado;
+
+    private Vector3 escalaVisualInicial;
+    private Vector3 posicionVisualInicial;
 
     void Start()
     {
@@ -31,17 +41,25 @@ public class Jugador : MonoBehaviour
         controlador.center = new Vector3(0, alturaNormal / 2f, 0);
 
         if (camara == null && Camera.main != null)
-        {
             camara = Camera.main.transform;
+
+        if (camara != null)
+        {
+            Vector3 p = camara.localPosition;
+            p.y = alturaCamaraNormal;
+            camara.localPosition = p;
+        }
+
+        if (cuerpoVisual != null)
+        {
+            escalaVisualInicial = cuerpoVisual.localScale;
+            posicionVisualInicial = cuerpoVisual.localPosition;
         }
 
         if (menuPausa != null)
-        {
             menuPausa.SetActive(false);
-        }
 
         Time.timeScale = 1f;
-        pausado = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -49,20 +67,14 @@ public class Jugador : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
-        {
             CambiarPausa();
-        }
 
         if (pausado)
-        {
             return;
-        }
 
         Mirar();
-        Mover();
-        Saltar();
         Agacharse();
-        ControlarRaton();
+        Mover();
     }
 
     void Mirar()
@@ -73,109 +85,129 @@ public class Jugador : MonoBehaviour
         float ratonX = Input.GetAxis("Mouse X") * sensibilidadRaton;
         float ratonY = Input.GetAxis("Mouse Y") * sensibilidadRaton;
 
-        transform.Rotate(0, ratonX, 0);
+        // El cuerpo gira a izquierda y derecha.
+        transform.Rotate(0f, ratonX, 0f);
 
+        // La camara mira arriba y abajo.
         rotacionVertical -= ratonY;
         rotacionVertical = Mathf.Clamp(rotacionVertical, -80f, 80f);
 
         if (camara != null)
-        {
-            camara.localRotation =
-                Quaternion.Euler(rotacionVertical, 0, 0);
-        }
+            camara.localRotation = Quaternion.Euler(rotacionVertical, 0f, 0f);
     }
 
-    void Mover()
+    
+void Mover()
+{
+    bool enSuelo = controlador.isGrounded;
+
+    // Si toca el suelo, detener la caida.
+    if (enSuelo && velocidadVertical < 0f)
     {
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
-
-        Vector3 movimiento =
-            transform.right * horizontal +
-            transform.forward * vertical;
-
-        movimiento = Vector3.ClampMagnitude(movimiento, 1f);
-
-        float velocidadActual = velocidad;
-
-        if (Input.GetKey(KeyCode.LeftShift) && !agachado)
-        {
-            velocidadActual = velocidadCorrer;
-        }
-
-        if (agachado)
-        {
-            velocidadActual = 2.5f;
-        }
-
-        controlador.Move(
-            movimiento * velocidadActual * Time.deltaTime
-        );
+        velocidadVertical = -2f;
     }
 
-    void Saltar()
+    // Saltar una sola vez al pulsar Espacio.
+    if (enSuelo && Input.GetKeyDown(KeyCode.Space) && !agachado)
     {
-        if (controlador.isGrounded && velocidadVertical < 0)
-        {
-            velocidadVertical = -2f;
-        }
-
-        if (controlador.isGrounded &&
-            Input.GetKeyDown(KeyCode.Space) &&
-            !agachado)
-        {
-            velocidadVertical =
-                Mathf.Sqrt(saltar * -2f * gravedad);
-        }
-
-        velocidadVertical += gravedad * Time.deltaTime;
-
-        controlador.Move(
-            Vector3.up * velocidadVertical * Time.deltaTime
-        );
+        velocidadVertical = 6f;
     }
+
+    // Aplicar gravedad continuamente.
+    velocidadVertical += gravedad * Time.deltaTime;
+
+    // Limitar la velocidad de caida.
+    velocidadVertical = Mathf.Max(velocidadVertical, -20f);
+
+    float x = Input.GetAxis("Horizontal");
+    float z = Input.GetAxis("Vertical");
+
+    Vector3 movimiento =
+        transform.right * x +
+        transform.forward * z;
+
+    movimiento = Vector3.ClampMagnitude(movimiento, 1f);
+
+    float velocidadActual = velocidad;
+
+    if (Input.GetKey(KeyCode.LeftShift) && !agachado)
+    {
+        velocidadActual = velocidadCorrer;
+    }
+
+    if (agachado)
+    {
+        velocidadActual = 2.5f;
+    }
+
+    Vector3 movimientoFinal =
+        movimiento * velocidadActual +
+        Vector3.up * velocidadVertical;
+
+    controlador.Move(movimientoFinal * Time.deltaTime);
+}
+
 
     void Agacharse()
     {
         agachado = Input.GetKey(KeyCode.LeftControl);
 
-        float alturaObjetivo =
-            agachado ? alturaAgachado : alturaNormal;
+        float alturaObjetivo = agachado
+            ? alturaAgachado
+            : alturaNormal;
 
+        // Reducir el controlador manteniendo los pies en el suelo.
         controlador.height = Mathf.Lerp(
             controlador.height,
             alturaObjetivo,
-            10f * Time.deltaTime
+            12f * Time.deltaTime
         );
 
         controlador.center = new Vector3(
-            0,
+            0f,
             controlador.height / 2f,
-            0
+            0f
         );
 
+        // Bajar la camara.
         if (camara != null)
         {
-            Vector3 posicion = camara.localPosition;
-            float alturaCamara = agachado ? 1f : 1.6f;
+            Vector3 p = camara.localPosition;
+            p.y = Mathf.Lerp(
+                p.y,
+                agachado ? alturaCamaraAgachado : alturaCamaraNormal,
+                12f * Time.deltaTime
+            );
+            camara.localPosition = p;
+        }
 
-            posicion.y = Mathf.Lerp(
-                posicion.y,
-                alturaCamara,
-                10f * Time.deltaTime
+        // Encoger y bajar el modelo visual.
+        if (cuerpoVisual != null)
+        {
+            float proporcion = alturaAgachado / alturaNormal;
+
+            Vector3 escalaObjetivo = escalaVisualInicial;
+            Vector3 posicionObjetivo = posicionVisualInicial;
+
+            if (agachado)
+            {
+                escalaObjetivo.y = escalaVisualInicial.y * proporcion;
+
+                posicionObjetivo.y -=
+                    (escalaVisualInicial.y - escalaObjetivo.y) / 2f;
+            }
+
+            cuerpoVisual.localScale = Vector3.Lerp(
+                cuerpoVisual.localScale,
+                escalaObjetivo,
+                12f * Time.deltaTime
             );
 
-            camara.localPosition = posicion;
-        }
-    }
-
-    void ControlarRaton()
-    {
-        if (Input.GetMouseButtonDown(0) &&
-            Cursor.lockState != CursorLockMode.Locked)
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            cuerpoVisual.localPosition = Vector3.Lerp(
+                cuerpoVisual.localPosition,
+                posicionObjetivo,
+                12f * Time.deltaTime
+            );
         }
     }
 
@@ -183,13 +215,12 @@ public class Jugador : MonoBehaviour
     {
         if (menuPausa == null)
         {
-            Debug.LogError("No has asignado el MenuPausa en el Inspector.");
+            Debug.LogError("Falta asignar el menu de pausa en Jugador.");
             return;
         }
 
         pausado = !pausado;
         menuPausa.SetActive(pausado);
-
         Time.timeScale = pausado ? 0f : 1f;
 
         Cursor.lockState = pausado
@@ -201,10 +232,7 @@ public class Jugador : MonoBehaviour
 
     public void Reanudar()
     {
-        if (!pausado)
-            return;
-
-        CambiarPausa();
+        if (pausado)
+            CambiarPausa();
     }
 }
-
