@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3708397aa8a40e942ad18454c94ad115
+guid: ffabab3994904a04aaf1dfb8ffd1c9ec
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3791851644636981665
-    second: Paisaje nocturno de niebla roja_0
+      213: -7643699535433341120
+    second: fondo aura_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -102,13 +102,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Paisaje nocturno de niebla roja_0
+      name: fondo aura_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 1672
-        height: 941
+        width: 1199
+        height: 674
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -117,8 +117,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1a9619f0bfc5f9430800000000000000
-      internalID: 3791851644636981665
+      spriteID: 0476da445cf1ce590800000000000000
+      internalID: -7643699535433341120
       vertices: []
       indices: 
       edges: []
@@ -127,7 +127,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -137,7 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Paisaje nocturno de niebla roja_0: 3791851644636981665
+      fondo aura_0: -7643699535433341120
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
