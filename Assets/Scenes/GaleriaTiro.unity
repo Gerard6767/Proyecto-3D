@@ -268,6 +268,7 @@ GameObject:
   - component: {fileID: 269533724}
   - component: {fileID: 269533723}
   - component: {fileID: 269533722}
+  - component: {fileID: 269533725}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Player
@@ -616,7 +617,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 374668653}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2017645025}
+        m_TargetAssemblyTypeName: ControladorPausa, Assembly-CSharp
+        m_MethodName: Reiniciar
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &374668653
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1178,7 +1191,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 941573701}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2017645025}
+        m_TargetAssemblyTypeName: ControladorPausa, Assembly-CSharp
+        m_MethodName: Continuar
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &941573701
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1299,7 +1324,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1225268882}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2017645025}
+        m_TargetAssemblyTypeName: ControladorPausa, Assembly-CSharp
+        m_MethodName: VolverAlMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1225268882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1388,13 +1425,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Jugador
   camara: {fileID: 2127600117}
+  sensibilidadRaton: 2
   velocidad: 5
   velocidadCorrer: 8
-  saltar: 2
-  sensibilidadRaton: 2
+  fuerzaSalto: 7
   gravedad: -20
+  cuerpoVisual: {fileID: 0}
   alturaNormal: 2
   alturaAgachado: 1.2
+  alturaCamaraNormal: 1.6
+  alturaCamaraAgachado: 1
   menuPausa: {fileID: 0}
 --- !u!143 &1401460449
 CharacterController:
