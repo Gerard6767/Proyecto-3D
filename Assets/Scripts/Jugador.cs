@@ -35,6 +35,8 @@ public class Jugador : MonoBehaviour
 
     void Start()
     {
+       // Vector3 initCamPos = camara.localPosition;
+        //float initCamPosY = initCamPos.Y;
         controlador = GetComponent<CharacterController>();
 
         controlador.height = alturaNormal;
@@ -64,18 +66,22 @@ public class Jugador : MonoBehaviour
         Cursor.visible = false;
     }
 
-    void Update()
+   void Update()
+{
+    if (Input.GetKeyDown(KeyCode.Escape))
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-            CambiarPausa();
-
-        if (pausado)
-            return;
-
-        Mirar();
-        Agacharse();
-        Mover();
+        CambiarPausa();
     }
+
+    if (pausado)
+    {
+        return;
+    }
+
+    Mirar();
+    Agacharse();
+    Mover();
+}
 
     void Mirar()
     {
@@ -117,7 +123,7 @@ void Mover()
     velocidadVertical += gravedad * Time.deltaTime;
 
     // Limitar la velocidad de caida.
-    velocidadVertical = Mathf.Max(velocidadVertical, -20f);
+   velocidadVertical = Mathf.Max(velocidadVertical, -20f);
 
     float x = Input.GetAxis("Horizontal");
     float z = Input.GetAxis("Vertical");
@@ -148,68 +154,34 @@ void Mover()
 }
 
 
-    void Agacharse()
+   void Agacharse()
+{
+    
+    if (Input.GetKeyDown(KeyCode.LeftControl))
     {
-        agachado = Input.GetKey(KeyCode.LeftControl);
+        agachado = true;
 
-        float alturaObjetivo = agachado
-            ? alturaAgachado
-            : alturaNormal;
+        controlador.height = alturaAgachado;
+        //controlador.center = new Vector3(0, alturaAgachado / 2f, 0);
 
-        // Reducir el controlador manteniendo los pies en el suelo.
-        controlador.height = Mathf.Lerp(
-            controlador.height,
-            alturaObjetivo,
-            12f * Time.deltaTime
-        );
-
-        controlador.center = new Vector3(
-            0f,
-            controlador.height / 2f,
-            0f
-        );
-
-        // Bajar la camara.
-        if (camara != null)
-        {
-            Vector3 p = camara.localPosition;
-            p.y = Mathf.Lerp(
-                p.y,
-                agachado ? alturaCamaraAgachado : alturaCamaraNormal,
-                12f * Time.deltaTime
-            );
-            camara.localPosition = p;
-        }
-
-        // Encoger y bajar el modelo visual.
-        if (cuerpoVisual != null)
-        {
-            float proporcion = alturaAgachado / alturaNormal;
-
-            Vector3 escalaObjetivo = escalaVisualInicial;
-            Vector3 posicionObjetivo = posicionVisualInicial;
-
-            if (agachado)
-            {
-                escalaObjetivo.y = escalaVisualInicial.y * proporcion;
-
-                posicionObjetivo.y -=
-                    (escalaVisualInicial.y - escalaObjetivo.y) / 2f;
-            }
-
-            cuerpoVisual.localScale = Vector3.Lerp(
-                cuerpoVisual.localScale,
-                escalaObjetivo,
-                12f * Time.deltaTime
-            );
-
-            cuerpoVisual.localPosition = Vector3.Lerp(
-                cuerpoVisual.localPosition,
-                posicionObjetivo,
-                12f * Time.deltaTime
-            );
-        }
+        Vector3 posicion = camara.localPosition;
+        posicion.y = controlador.height;
+        //camara.localPosition = posicion;
+        //transform.position = posicion;
     }
+    else if (Input.GetKeyUp(KeyCode.LeftControl))
+    {
+        agachado = false;
+
+        controlador.height = alturaNormal;
+        //controlador.center = new Vector3(0, alturaNormal / 2f, 0);
+
+        Vector3 posicion = camara.localPosition;
+        posicion.y = controlador.height/1.25f;
+        camara.localPosition = posicion;
+        //transform.position = posicion;
+    }
+}
 
     public void CambiarPausa()
     {
