@@ -24,6 +24,9 @@ public class Jugador : MonoBehaviour
     [Header("Pausa")]
     public GameObject menuPausa;
 
+    [Header("Interaccion")]
+    public float distanciaInteraccion = 3f;
+
     private CharacterController controlador;
     private float velocidadVertical;
     private float rotacionVertical;
@@ -81,6 +84,7 @@ public class Jugador : MonoBehaviour
     Mirar();
     Agacharse();
     Mover();
+    Interactuar();
 }
 
     void Mirar()
@@ -206,5 +210,23 @@ void Mover()
     {
         if (pausado)
             CambiarPausa();
+    }
+
+    void Interactuar()
+    {
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            RaycastHit impacto;
+
+            if (Physics.Raycast(camara.position, camara.forward, out impacto, distanciaInteraccion))
+            {
+                ObjetoInteractuable objeto = impacto.collider.GetComponentInParent<ObjetoInteractuable>();
+
+                if (objeto != null)
+                {
+                    objeto.Interactuar();
+                }
+            }
+        }
     }
 }
